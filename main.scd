@@ -25,11 +25,9 @@ Server.default.waitForBoot{
 	};
 
 	~readContent = {
-		"hallo".postln;
 		~view.runJavaScript("document.body.innerText", { | content |
 			var i = 0;
-			content.size.postln;
-			content.asString.size.postln;
+			content.split(Char.space).postln;
 		});
 	};
 
@@ -37,3 +35,4 @@ Server.default.waitForBoot{
 
 	~run.value;
 }
+
