@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <title>QLab-esque Cue List</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      padding: 2rem;
+      background: #f0f0f0;
+    }
+
+    h1 {
+      margin-bottom: 1rem;
+    }
+
+    #cueInput {
+      width: 300px;
+      padding: 0.5rem;
+    }
+
+    button {
+      margin-left: 0.5rem;
+      padding: 0.5rem 1rem;
+    }
+
+    ol {
+      margin-top: 2rem;
+      padding-left: 1.5rem;
+    }
+
+    li {
+      margin-bottom: 0.5rem;
+      background: white;
+      padding: 0.5rem;
+      border-radius: 4px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .delete-btn {
+      background: red;
+      color: white;
+      border: none;
+      padding: 0.3rem 0.6rem;
+      cursor: pointer;
+    }
+  </style>
+</head>
+
+<body>
+
+  <h1>Memo Cue List</h1>
+
+  <input type="text" id="cueInput" placeholder="Enter cue">
+  <button onclick="addCue()">Add Cue</button>
+
+  <ol id="cueList"></ol>
+
+  <script>
+    function addCue() {
+      const input = document.getElementById('cueInput');
+      const cueText = input.value.trim();
+      if (cueText === '') return;
+
+      const li = document.createElement('li');
+      li.dataset.cueText = cueText; // Store original cue name
+      li.innerHTML = `
+      <span></span>
+      <button class="delete-btn" onclick="deleteCue(this)">Delete</button>
+    `;
+      document.getElementById('cueList').appendChild(li);
+      input.value = '';
+      input.focus();
+      updateCueNumbers();
+      console.log("update");
+    }
+
+    function deleteCue(button) {
+      const li = button.parentElement;
+      li.remove();
+      updateCueNumbers();
+    }
+
+    function updateCueNumbers() {
+      const cueList = document.querySelectorAll('#cueList li');
+      cueList.forEach((li, index) => {
+        const cueText = li.dataset.cueText;
+        li.querySelector('span').textContent = ` Q${index + 1} ${cueText}`;
+      });
+    }
+  </script>
+
+</body>
+
+</html>
