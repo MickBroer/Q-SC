@@ -1,55 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
   <title>SC-Q</title>
   <style>
-    body {
-      font-family: sans-serif;
-      padding: 2rem;
-      background: #f0f0f0;
-    }
+    body        { font-family:sans-serif; padding:2rem; background:#f0f0f0; }
+    h1          { margin-bottom:1rem; }
+    #cueInput   { width:300px; padding:0.5rem; }
+    button      { margin-left:0.5rem; padding:0.5rem 1rem; }
+    ol          { margin-top:2rem; padding-left:1.5rem; }
 
-    h1 {
-      margin-bottom: 1rem;
+    li{
+      margin-bottom:0.5rem; background:white; padding:0.5rem;
+      border-radius:4px; display:flex; justify-content:space-between; align-items:center;
+      color:rgb(0, 0, 0);               /* default (deselect) colour             */
+      user-select:none;                     /* geen tekstselectie bij klikken        */
+      cursor:pointer;
     }
+    li.selected{ color:rgb(255, 0, 0); }             /* actief                                */
 
-    #cueInput {
-      width: 300px;
-      padding: 0.5rem;
-    }
-
-    button {
-      margin-left: 0.5rem;
-      padding: 0.5rem 1rem;
-    }
-
-    ol {
-      margin-top: 2rem;
-      padding-left: 1.5rem;
-    }
-
-    li {
-      margin-bottom: 0.5rem;
-      background: white;
-      padding: 0.5rem;
-      border-radius: 4px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .delete-btn {
-      background: red;
-      color: white;
-      border: none;
-      padding: 0.3rem 0.6rem;
-      cursor: pointer;
+    .delete-btn{
+      background:rgb(255, 0, 0); color:white; border:none; padding:0.3rem 0.6rem; cursor:pointer;
     }
   </style>
 </head>
-
 <body>
 
   <h1>Memo Cue List</h1>
@@ -59,40 +33,52 @@
 
   <ol id="cueList"></ol>
 
-  <script>
-    function addCue() {
-      const input = document.getElementById('cueInput');
-      const cueText = input.value.trim();
-      if (cueText === '') return;
+<script>
 
-      const li = document.createElement('li');
-      li.dataset.cueText = cueText; // Store original cue name
-      li.innerHTML = `
-      <span></span>
-      <button class="delete-btn" onclick="deleteCue(this)">Delete</button>
-    `;
-      document.getElementById('cueList').appendChild(li);
-      input.value = '';
-      input.focus();
-      updateCueNumbers();
-      console.log("update");
-    }
+function updateCueNumbers(){
+  console.log("update");
+  const cueList = document.querySelectorAll('#cueList li');
+  cueList.forEach((li, index) => {
+    const cueText   = li.dataset.cueText;
+    const indicator = li.dataset.selected === 'true' ? '[+]' : '[_]';
+    li.querySelector('span').textContent = `Q${index+1} ${cueText}${indicator}`;
+    li.classList.toggle('selected', li.dataset.selected === 'true');
+  });
+}
 
-    function deleteCue(button) {
-      const li = button.parentElement;
-      li.remove();
-      updateCueNumbers();
-    }
+function toggleCue(li){
+  li.dataset.selected = (li.dataset.selected !== 'true').toString();
+  updateCueNumbers();
+}
 
-    function updateCueNumbers() {
-      const cueList = document.querySelectorAll('#cueList li');
-      cueList.forEach((li, index) => {
-        const cueText = li.dataset.cueText;
-        li.querySelector('span').textContent = ` Q${index + 1} ${cueText}`;
-      });
-    }
-  </script>
+function addCue(){
+  const input = document.getElementById('cueInput');
+  const cueText = input.value.trim();
+  if(!cueText) return;
 
+  const li = document.createElement('li');
+  li.dataset.cueText  = cueText;
+  li.dataset.selected = 'false';
+  li.innerHTML = `
+    <span></span>
+    <button class="delete-btn" onclick="deleteCue(this,event)">Delete</button>
+  `;
+
+  li.addEventListener('click', e=>{
+    if(e.target.classList.contains('delete-btn')) return;
+    toggleCue(li);
+  });
+
+  document.getElementById('cueList').appendChild(li);
+  input.value = ''; input.focus();
+  updateCueNumbers();
+}
+
+function deleteCue(button, event){
+  event.stopPropagation();              
+  button.parentElement.remove();
+  updateCueNumbers();
+}
+</script>
 </body>
-
 </html>
